@@ -48,7 +48,6 @@ def record_voice():
             print('the last sentence you spoke was saved in you_said_this.txt')
         except stop_record:
              print("In exception")
-        #     return text
             
 
 def summarize(text,per):
@@ -93,8 +92,8 @@ def refreshTextWindow(per):
     '''
     for widgets in frame.winfo_children():
         widgets.destroy()
-    label = Label(frame,text="Summarizer", font=('Helvetica',20)).grid(row=0,column=1,pady=5)
-    text_input = StringVar()
+    label = Label(frame,text="Summarizer", font=('Helvetica',20))
+    label.grid(row=0,column=1,pady=5)
     name_label = Label(frame, text = 'Text')
     textfield = ScrolledText(frame,width=60,height=20)
     textfield.grid(row=1,column=1)
@@ -121,7 +120,6 @@ def refreshAudioWindow(per):
 def audio_to_text(per):
     global stop_record
     stop_record = True
-    #file1 = open('you_said_this.txt', 'r')
     text = file.read()
     file.close()
     text_data = summarize(text,per)
