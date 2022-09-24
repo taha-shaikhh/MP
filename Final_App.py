@@ -14,12 +14,30 @@ root.title('Summarizer')
 root.geometry("1000x1000")
 frame = Frame(root)
 frame.pack()
+file = open('you_said_this.txt', 'a+')
 stop_record = True
+
+def startScreen():
+    for widgets in frame.winfo_children():
+        widgets.destroy()
+    head = Label(frame,text="Summarizer", font=('Helvetica',20))
+    head.grid(row=0,column=2)
+    var = StringVar()
+    label1 = Label(frame,text="Please select how much you want to summarize the data:")
+    label1.grid(row=1,column=2)
+    slider = Scale(frame, from_=10, to=100,length=400,tickinterval=10, orient=HORIZONTAL)
+    slider.set(50)
+    slider.grid(row=2,column=2,pady=10)
+    label2 = Label(frame,text="Select the type of input you will provide:")
+    label2.grid(row=3,column=2,pady=10)
+    R1 = Radiobutton(frame, text="Text", variable=var, value="t",command=lambda:refreshTextWindow(slider.get()/100))
+    R2 = Radiobutton(frame, text="Audio", variable=var, value="s",command=lambda:refreshAudioWindow(slider.get()/100))
+    R1.grid(row=4,column=1,pady=10)
+    R2.grid(row=4,column=3,pady=10)
 
 def record_voice():
     global stop_record
     microphone = speech_recognition.Recognizer()
-    file = open('you_said_this.txt', 'a+')
     with speech_recognition.Microphone() as live_phone:
         microphone.adjust_for_ambient_noise(live_phone)
         print("I'm trying to hear you: ")
@@ -64,11 +82,12 @@ def summarize(text,per):
     summary=''.join(final_summary)
     return summary
 
-def getTextField(inputtext):
+def getTextField(inputtext,per):
     res = inputtext.get("1.0","end-1c")
+    print(per)
     resultScreen(res)
 
-def refreshTextWindow():
+def refreshTextWindow(per):
     '''
         Function to call Text input screen
     '''
@@ -80,12 +99,12 @@ def refreshTextWindow():
     textfield = ScrolledText(frame,width=60,height=20)
     textfield.grid(row=1,column=1)
     name_label.grid(row=1,column=0)
-    sub_button = Button(frame,text='Submit',command=lambda:getTextField(textfield),width=10)
+    sub_button = Button(frame,text='Submit',command=lambda:getTextField(textfield,per),width=10)
     sub_button.grid(row=4,column=1,pady=8)
     menu_button = Button(frame,text='Menu',command=startScreen,width=10)
     menu_button.grid(row=6,column=1,pady=8)
 
-def refreshAudioWindow():
+def refreshAudioWindow(per):
     '''
         Function to call Audio input screen
     '''
@@ -93,31 +112,19 @@ def refreshAudioWindow():
         widgets.destroy()
     l = Label(frame,text="Your audio is being recorded")
     l.grid(row=1,column=1,pady=5)
-    stop_button = Button(frame,text='Stop ',command=audio_to_text,width=10)
+    stop_button = Button(frame,text='Stop ',command=lambda:audio_to_text(per),width=10)
     stop_button.grid(row=2,column=1,pady=10)
     menu_button = Button(frame,text='Menu',command=startScreen,width=10)
     menu_button.grid(row=2,column=2,pady=10)
 
-def startScreen():
-    for widgets in frame.winfo_children():
-        widgets.destroy()
-    label = Label(frame,text="Summarizer", font=('Helvetica',20)).grid(row=0,column=2)
-    
-    var = StringVar()
-    R1 = Radiobutton(frame, text="Text", variable=var, value="t",command=refreshTextWindow)
 
-    R2 = Radiobutton(frame, text="Audio", variable=var, value="s",command=refreshAudioWindow)
-    
-    R1.grid(row=2,column=1,pady=10)
-    R2.grid(row=2,column=3,pady=10)
-
-def audio_to_text():
+def audio_to_text(per):
     global stop_record
     stop_record = True
-    file1 = open('you_said_this.txt', 'r')
-    text = file1.read()
-    file1.close()
-    text_data = summarize(text,0.6)
+    #file1 = open('you_said_this.txt', 'r')
+    text = file.read()
+    file.close()
+    text_data = summarize(text,per)
     resultScreen(text_data)
 
 def resultScreen(text_input):
@@ -125,10 +132,15 @@ def resultScreen(text_input):
         widgets.destroy()
     label = Label(frame,text="Results:", font=('Helvetica',20))
     label.grid(row=0,column=1,pady=5)
-    result_data = summarize(text_input,0.6)
-    resultField = ScrolledText(frame,width=60,height=20)
-    resultField.grid(row=1,column=1)
-    resultField.insert(0,result_data)
+    if(text_input):
+        result_data = summarize(text_input,0.6)
+        resultField = ScrolledText(frame,width=60,height=20)
+        resultField.grid(row=1,column=1)
+        print(result_data)
+        resultField.insert('insert',result_data)
+    else:
+        label = Label(frame,text="Oops! Looks like you haven't provided any input. Please try again", font=('Helvetica',15))
+        label.grid(row=0,column=1,pady=5)
     menuButton = Button(frame,text='Menu',command=startScreen,width=10)
     menuButton.grid(row=2,column=1,pady=8)
 
