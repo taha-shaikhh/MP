@@ -8,6 +8,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 from turtle import width
+import os
 
 root = Tk()
 root.title('Summarizer')
@@ -51,7 +52,7 @@ def record_voice():
             
 
 def summarize(text,per):
-    print(text)
+    #print(text)
     nlp = spacy.load('en_core_web_sm')
     doc= nlp(text)
     tokens=[token.text for token in doc]
@@ -83,8 +84,9 @@ def summarize(text,per):
 
 def getTextField(inputtext,per):
     res = inputtext.get("1.0","end-1c")
-    print(per)
-    resultScreen(res)
+    if(inputtext):
+        resulttext = summarize(res,per)
+        resultScreen(resulttext)
 
 def refreshTextWindow(per):
     '''
@@ -120,25 +122,32 @@ def refreshAudioWindow(per):
 def audio_to_text(per):
     global stop_record
     stop_record = True
-    text = file.read()
+    text_input = file.read()
     file.close()
-    text_data = summarize(text,per)
-    resultScreen(text_data)
+    if(text_input):
+        text_result = summarize(text_input,per)
+        resultScreen(text_result)
+    else:
+        text_result = ""
+        resultScreen(text_result)
 
-def resultScreen(text_input):
+def resultScreen(text_result):
     for widgets in frame.winfo_children():
         widgets.destroy()
     label = Label(frame,text="Results:", font=('Helvetica',20))
     label.grid(row=0,column=1,pady=5)
-    if(text_input):
-        result_data = summarize(text_input,0.6)
+    if(text_result or text_result != ""):
         resultField = ScrolledText(frame,width=60,height=20)
         resultField.grid(row=1,column=1)
-        print(result_data)
-        resultField.insert('insert',result_data)
+        print(text_result)
+        resultField.insert('insert',text_result)
     else:
         label = Label(frame,text="Oops! Looks like you haven't provided any input. Please try again", font=('Helvetica',15))
         label.grid(row=0,column=1,pady=5)
+    if os.path.exists("you_said_this.txt"):
+        os.remove("you_said_this.txt")
+    else:
+        print("The file does not exist")
     menuButton = Button(frame,text='Menu',command=startScreen,width=10)
     menuButton.grid(row=2,column=1,pady=8)
 
