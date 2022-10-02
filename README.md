@@ -1,6 +1,6 @@
-#**Summarizer**
+# **Summarizer**
 
-##To install this in your machine, copy & run the following commands:
+## To install this in your machine, copy & run the following commands:
 
 
 ```
