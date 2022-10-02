@@ -144,12 +144,10 @@ def resultScreen(text_result):
     else:
         label = Label(frame,text="Oops! Looks like you haven't provided any input. Please try again", font=('Helvetica',15))
         label.grid(row=0,column=1,pady=5)
-    if os.path.exists("you_said_this.txt"):
-        os.remove("you_said_this.txt")
-    else:
-        print("The file does not exist")
     menuButton = Button(frame,text='Menu',command=startScreen,width=10)
     menuButton.grid(row=2,column=1,pady=8)
+    if os.path.exists("you_said_this.txt"):
+        os.remove("you_said_this.txt")
 
 startScreen()
 root.mainloop()
